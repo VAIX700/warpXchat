@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>WarpXChat - Online Chatting App</title>
-  <link rel="icon" type="image/png" href="favicon.png" />
+  <title>WarpXChat - Register & Chat</title>
+  <link rel="icon" type="image/png" href="favicon.png">
   <style>
     body {
       margin: 0;
@@ -11,7 +11,7 @@
       background: linear-gradient(to right, #0f0f0f, #1c1c1c);
       color: #fff;
     }
-    #login, #chat {
+    #register, #chat {
       max-width: 400px;
       margin: 50px auto;
       padding: 24px;
@@ -46,6 +46,7 @@
       margin-bottom: 10px;
       padding: 8px;
       background: #1e1e1e;
+      border-left: 4px solid #00f2ff;
       border-radius: 6px;
     }
     .msg span {
@@ -53,78 +54,122 @@
       color: #00f2ff;
     }
     #chat { display: none; }
+
+    /* 🔔 Custom Alert Box */
+    #customAlert {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2b2b2b;
+      color: #ff5b5b;
+      padding: 12px 24px;
+      border: 1px solid #ff5b5b;
+      border-radius: 8px;
+      font-weight: bold;
+      z-index: 9999;
+      display: none;
+      box-shadow: 0 0 10px #ff5b5b88;
+    }
   </style>
 </head>
 <body>
 
-  <div id="login">
-    <h2>Enter WarpXChat</h2>
-    <input type="text" id="displayName" placeholder="Enter your display name" />
-    <button onclick="enterChat()">Join</button>
-  </div>
+<div id="customAlert"></div> <!-- 🔔 Alert placeholder -->
 
-  <div id="chat">
-    <h3>🌐 Public Chat</h3>
-    <div id="messages"></div>
-    <input type="text" id="msgInput" placeholder="Type your message..." />
-    <button onclick="sendMessage()">Send</button>
-    <button onclick="logout()">Logout</button>
-  </div>
+<!-- Register -->
+<div id="register">
+  <h2>⚔️ Register to WarpXChat</h2>
+  <input type="email" id="email" placeholder="Email" />
+  <input type="password" id="password" placeholder="Password" />
+  <input type="text" id="displayName" placeholder="Display Name" />
+  <button onclick="register()">Join Chat</button>
+</div>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<!-- Chat -->
+<div id="chat">
+  <h3>🌐 Public Chat</h3>
+  <div id="messages"></div>
+  <input type="text" id="msgInput" placeholder="Type your message..." />
+  <button onclick="sendMessage()">Send</button>
+  <button onclick="logout()">Logout</button>
+</div>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDUdgZ_A0SbvsXaIVwgU30DP0yma-LOMn4",
-      authDomain: "warpxchat-10bb3.firebaseapp.com",
-      databaseURL: "https://warpxchat-10bb3-default-rtdb.firebaseio.com",
-      projectId: "warpxchat-10bb3",
-      storageBucket: "warpxchat-10bb3.appspot.com",
-      messagingSenderId: "302423390250",
-      appId: "1:302423390250:web:005078fe449cc23a042b53"
-    };
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const messagesRef = db.ref("messages");
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDUdgZ_A0SbvsXaIVwgU30DP0yma-LOMn4",
+    authDomain: "warpxchat-10bb3.firebaseapp.com",
+    databaseURL: "https://warpxchat-10bb3-default-rtdb.firebaseio.com",
+    projectId: "warpxchat-10bb3",
+    storageBucket: "warpxchat-10bb3.appspot.com",
+    messagingSenderId: "302423390250",
+    appId: "1:302423390250:web:005078fe449cc23a042b53"
+  };
 
-    let currentUser = null;
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const messagesRef = db.ref("messages");
 
-    function enterChat() {
-      const name = document.getElementById("displayName").value.trim();
-      if (name) {
-        currentUser = name;
-        document.getElementById("login").style.display = "none";
-        document.getElementById("chat").style.display = "block";
-      }
+  let currentUser = null;
+
+  function showCustomAlert(message) {
+    const alertBox = document.getElementById("customAlert");
+    alertBox.innerText = message;
+    alertBox.style.display = "block";
+    setTimeout(() => {
+      alertBox.style.display = "none";
+    }, 3000);
+  }
+
+  function register() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const displayName = document.getElementById("displayName").value.trim();
+
+    if (!email || !password || !displayName) {
+      showCustomAlert("❗ Please fill in all fields.");
+      return;
     }
 
-    function logout() {
-      currentUser = null;
-      document.getElementById("chat").style.display = "none";
-      document.getElementById("login").style.display = "block";
+    if (!email.includes("@") || !email.endsWith(".com")) {
+      showCustomAlert("❗ Enter a valid email with '@' and '.com'.");
+      return;
     }
 
-    function sendMessage() {
-      const input = document.getElementById("msgInput");
-      const text = input.value.trim();
-      if (text && currentUser) {
-        messagesRef.push({ name: currentUser, text });
-        input.value = '';
-      }
-    }
+    currentUser = displayName;
+    document.getElementById("register").style.display = "none";
+    document.getElementById("chat").style.display = "block";
+  }
 
-    messagesRef.on("child_added", snapshot => {
-      const msg = snapshot.val();
-      const div = document.createElement("div");
-      div.className = "msg";
-      div.innerHTML = `<span>${msg.name}:</span> ${msg.text}`;
-      const messagesDiv = document.getElementById("messages");
-      messagesDiv.appendChild(div);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    });
-  </script>
+  function logout() {
+    currentUser = null;
+    document.getElementById("chat").style.display = "none";
+    document.getElementById("register").style.display = "block";
+    document.getElementById("messages").innerHTML = "";
+  }
+
+  function sendMessage() {
+    const input = document.getElementById("msgInput");
+    const text = input.value.trim();
+    if (text && currentUser) {
+      messagesRef.push({ name: currentUser, text });
+      input.value = '';
+    }
+  }
+
+  messagesRef.on("child_added", snapshot => {
+    const msg = snapshot.val();
+    const div = document.createElement("div");
+    div.className = "msg";
+    div.innerHTML = `<span>${msg.name}:</span> ${msg.text}`;
+    const messagesDiv = document.getElementById("messages");
+    messagesDiv.appendChild(div);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  });
+</script>
 </body>
 </html>
