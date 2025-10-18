@@ -28,7 +28,7 @@
       font-size: 16px;
     }
     button {
-      background: linear-gradient(90deg, #00f2ff, #7c00ff);
+      background: grey;
       color: white;
       font-weight: bold;
       cursor: pointer;
@@ -122,7 +122,8 @@
 
 <!-- Register -->
 <div id="register">
-  <h2>⚔️ Register to WarpXChat</h2>
+  <h2>💬Register to WarpXChat</h2>
+  <p style="color:red;">Time expired -- Firebase console ended</p>
   <input type="email" id="email" placeholder="Email" />
   <input type="password" id="password" placeholder="Password" />
   <input type="text" id="displayName" placeholder="Display Name" />
@@ -131,7 +132,7 @@
 
 <!-- Chat -->
 <div id="chat">
-  <h3>🌐 Public Chat</h3>
+  <h3>Public Chat</h3>
   <div id="messages"></div>
   <input type="text" id="msgInput" placeholder="Type your message..." />
   <button onclick="sendMessage()">Send</button>
@@ -280,3 +281,4 @@
 </script>
 </body>
 </html>
+
